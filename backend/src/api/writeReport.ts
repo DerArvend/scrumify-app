@@ -1,6 +1,5 @@
 import { Response, Request } from 'express';
 import { poolPromise } from '../dataAccess/pool';
-import { parseReports } from '../helpers';
 import { Report } from '../entities/Report';
 import { getTeamId } from './../dataAccess/getTeamId';
 import uuid from 'uuid/v4';
@@ -9,14 +8,14 @@ const sql = require('mssql');
 const reportQuery = `
     INSERT INTO [scrumify].[dbo].[report]
     (Id,UserId,ReportDate,Comment)
-    VALUES 
+    VALUES
     (@id, @userId, @reportDate, @comment);
 `;
 
 const reportTaskQuery = `
-    INSERT INTO [dbo].[report-task]  
-    (Id,ReportId,Theme,Url,CurrentState,Problems)  
-    VALUES  
+    INSERT INTO [dbo].[report-task]
+    (Id,ReportId,Theme,Url,CurrentState,Problems)
+    VALUES
     (@id,@reportId,@theme,@url,@currentState,@problems)
 `;
 
@@ -46,15 +45,15 @@ export async function writeReport(req: Request, res: Response) {
             .input('comment', report.comment)
             .query(reportQuery);
 
-        for (let i = 0; i < report.tasks.length; i++) {
+        for (const task of report.tasks) {
             const request = new sql.Request(transaction);
             await request
                 .input('id', uuid())
                 .input('reportId', reportId)
-                .input('theme', report.tasks[i].theme)
-                .input('url', report.tasks[i].url)
-                .input('currentState', report.tasks[i].currentState)
-                .input('problems', report.tasks[i].problems)
+                .input('theme', task.theme)
+                .input('url', task.url)
+                .input('currentState', task.currentState)
+                .input('problems', task.problems)
                 .query(reportTaskQuery);
         }
         await transaction.commit();
@@ -65,6 +64,5 @@ export async function writeReport(req: Request, res: Response) {
         return;
     }
 
-    
     res.sendStatus(200);
 }

@@ -17,20 +17,20 @@ export function isEmptyTask(task: Task) {
     return (!task.currentState && !task.problems && !task.theme && !task.url);
 }
 
-
 export function parseReports(tasks: RawTask[]): Report[] {
-    const reportsById: {[id: string]: Report} = {};
-    for (let task of tasks) {
-        if (!(task.Id in reportsById)){
+    const reportsById: { [id: string]: Report } = {};
+    for (const task of tasks) {
+        if (!(task.Id in reportsById)) {
             reportsById[task.Id] = {
                 userName: task.Name,
                 reportDate: new Date(task.ReportDate),
                 comment: task.Comment,
                 taskId: task.Id,
-                tasks: []
+                tasks: [],
             };
         }
-        var parsedTask = parseTask(task);
+        const parsedTask = parseTask(task);
+
         if (!isEmptyTask(parsedTask))
             reportsById[task.Id].tasks.push(parsedTask);
     }

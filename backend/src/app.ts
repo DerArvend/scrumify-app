@@ -14,7 +14,7 @@ app.use(cookieParser());
 
 app.get('/api/fetchTasks', fetchTasks);
 app.post('/api/writeReport', writeReport);
-app.get('/api/getTeamId', async (req: any, res: any) => {const r = await getTeamId(req.query.userId); res.json(r);})
+app.get('/api/getTeamId', async (req: any, res: any) => { const r = await getTeamId(req.query.userId); res.json(r); });
 app.post('/api/auth', auth);
 
 app.listen(settings.port, () => console.log(`Scrumify backend listening on port ${settings.port}`));
