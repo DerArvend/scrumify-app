@@ -1,0 +1,9 @@
+{
+    "port": 4000,
+    "mssqlConfig": {
+        "user": "sa",
+        "password": "123",
+        "server": "DESKTOP-219FQPE",
+        "database": "scrumify"
+    }
+}
