@@ -20,6 +20,7 @@ interface FormPageState {
     reportDate: Date;
     comment?: string;
     tasks: { [taskId: string]: TaskData };
+    submitLoading?: boolean;
 }
 
 const defaultTaskData: TaskData = {
@@ -67,7 +68,7 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
                 <CommentInput value={this.state.comment} onChange={this.handleCommentChange} />
                 <ButtonRow>
                     <Link to='/'><Button size='large'>Отменить</Button></Link>
-                    <Button type='primary' size='large' onClick={this.handleSubmit}>Отправить отчет</Button>
+                    <Button type='primary' size='large' onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</Button>
                 </ButtonRow>
             </PageWrapper>
         );
@@ -108,13 +109,22 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
 
     private handleSubmit = async () => {
         try {
-            await axios.post('/api/writeReport', {...this.state, tasks: Object.values(this.state.tasks)}, { withCredentials: true });
+            this.setState({ submitLoading: true });
+            const response = await axios.post('/api/writeReport', {
+                userName: this.state.userName,
+                comment: this.state.comment,
+                reportDate: this.state.reportDate,
+                tasks: Object.values(this.state.tasks)
+            }, { withCredentials: true });
+            if (response && response.status && response.status === 200) {
+                message.success('Отчет отправлен');
+                this.props.history.push('/list');
+            }
         }
         catch (error) {
             const status = error.response.status;
             if (status >= 400 || status <= 403)
                 this.props.history.push('/auth');
         }
-        message.success('Отчет отправлен');
     }
 }
