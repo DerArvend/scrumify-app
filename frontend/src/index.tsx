@@ -1,14 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createBrowserHistory } from 'history';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import { registerIntercepors } from './registerIntercepors';
+
+const history = createBrowserHistory();
+registerIntercepors(history);
 
 ReactDOM.render(
-    <BrowserRouter >
+    <Router history={history}>
         <App />
-    </BrowserRouter>,
+    </Router>,
     document.getElementById('root'));
 
 serviceWorker.unregister();
