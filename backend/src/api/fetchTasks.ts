@@ -23,9 +23,17 @@ export async function fetchTasks(req: Request, res: Response) {
     const pool = await poolPromise;
     const skip = req.query.skip || 0;
     const take = req.query.take || 20;
-    const result: any = await pool.request()
-        .input('skip', sql.Int, skip)
-        .input('take', sql.Int, take)
-        .query(query);
-    res.json(parseReports(result.recordset));
+
+    try {
+        const result: any = await pool.request()
+            .input('skip', sql.Int, skip)
+            .input('take', sql.Int, take)
+            .query(query);
+        res.json(parseReports(result.recordset));
+    }
+    catch (error) {
+        console.log(`fetchTasks: sql error: ${error}`);
+        res.sendStatus(500);
+        return;
+    }
 }

@@ -59,7 +59,7 @@ export async function writeReport(req: Request, res: Response) {
         await transaction.commit();
     }
     catch (error) {
-        console.log(`sql transaction error: ${error}`);
+        console.log(`writeReport: sql transaction error: ${error}`);
         res.sendStatus(500);
         return;
     }

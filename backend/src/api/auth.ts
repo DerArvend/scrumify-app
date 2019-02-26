@@ -12,7 +12,15 @@ export async function auth(req: Request, res: Response) {
         return;
     }
     const pool = await poolPromise;
-    const response = await pool.request().input('userId', userId).query(query);
+    let response: any;
+    try {
+        response = await pool.request().input('userId', userId).query(query);
+    }
+    catch (error) {
+        console.log(`auth: sql error: ${error}`);
+        res.sendStatus(500);
+        return;
+    }
 
     if (response.recordset.length === 0) {
         res.sendStatus(403);

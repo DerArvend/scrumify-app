@@ -7,7 +7,7 @@ FROM [scrumify].[dbo].[user]
 WHERE [user].[Id] = @userId;
 `;
 
-type TeamIdFetchError = 'invalidArgument' | 'idNotFound';
+type TeamIdFetchError = 'invalidArgument' | 'idNotFound' | 'sqlError';
 
 export async function getTeamId(userId: string): Promise<Result<string, TeamIdFetchError>> {
     const uuidRegex = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/g;
@@ -15,9 +15,15 @@ export async function getTeamId(userId: string): Promise<Result<string, TeamIdFe
         return { isSuccess: false, error: 'invalidArgument' };
 
     const pool = await poolPromise;
-    const response = await pool.request()
-        .input('userId', userId)
-        .query(query);
+    let response: any;
+    try {
+        response = await pool.request()
+            .input('userId', userId)
+            .query(query);
+    }
+    catch (error) {
+        return { isSuccess: false, error: 'sqlError' }
+    }
 
     if (response.recordset.length === 0)
         return { isSuccess: false, error: 'idNotFound' };
