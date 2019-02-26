@@ -31,7 +31,7 @@ export class FormTaskCard extends React.PureComponent<FormTaskCardProps> {
     render() {
         const { theme, url, currentState, problems } = this.props.taskData;
         const cardTitle = <FormTaskCardTitle value={theme}
-            onChange={this.handleThemeChange}
+            onBlur={this.handleThemeChange}
             onClose={this.props.onClose}
             placeholder="Тема задачи" />;
 
@@ -45,8 +45,8 @@ export class FormTaskCard extends React.PureComponent<FormTaskCardProps> {
         </Card>;
     }
 
-    handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        this.props.onChange && this.props.onChange({ ...this.props.taskData, theme: e.target.value || '' });
+    handleThemeChange = (e: React.FocusEvent<HTMLDivElement>) =>
+        this.props.onChange && this.props.onChange({ ...this.props.taskData, theme: e.target.innerText || '' });
 
     handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
         this.props.onChange && this.props.onChange({ ...this.props.taskData, url: e.target.value || '' });

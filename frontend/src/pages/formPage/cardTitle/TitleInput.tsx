@@ -23,14 +23,14 @@ const TitleInputField = styled.div`
 
 export interface TitleInputProps extends TitleInputFieldProps {
     value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
 }
 
 export class TitleInput extends React.Component<TitleInputProps> {
     render() {
         return <TitleInputField
             onPaste={this.onPaste}
-            onChange={this.props.onChange}
+            onBlur={this.props.onBlur}
             placeholder={this.props.placeholder}
             contentEditable
             spellCheck={false}
