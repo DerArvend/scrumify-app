@@ -22,7 +22,7 @@ const reportTaskQuery = `
 export async function writeReport(req: Request, res: Response) {
     const { userId } = req.cookies;
     try {
-        getTeamId(userId);
+        await getTeamId(userId);
     }
     catch {
         res.sendStatus(403);
