@@ -21,10 +21,8 @@ const reportTaskQuery = `
 
 export async function writeReport(req: Request, res: Response) {
     const { userId } = req.cookies;
-    try {
-        await getTeamId(userId);
-    }
-    catch {
+    const teamId = await getTeamId(userId);
+    if (!teamId.isSuccess) {
         res.sendStatus(403);
         return;
     }
@@ -41,7 +39,7 @@ export async function writeReport(req: Request, res: Response) {
         await request
             .input('id', reportId)
             .input('userId', userId)
-            .input('reportDate', report.reportDate)
+            .input('reportDate', report.reportDate) // TODO: Date validation
             .input('comment', report.comment)
             .query(reportQuery);
 
