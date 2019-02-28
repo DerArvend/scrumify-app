@@ -31,10 +31,10 @@ export class Report extends React.Component<ReportProps> {
             <Divider>
                 <UserName>{this.props.userName}</UserName>
             </Divider>
-            {this.props.tasks.length > 0 && 
-            <CardField>
-                {this.props.tasks.map(taskData => <ListTaskCard {...taskData} />)}
-            </CardField>}
+            {this.props.tasks.length > 0 &&
+                <CardField>
+                    {this.props.tasks.map(taskData => <ListTaskCard {...taskData} />)}
+                </CardField>}
             <Comment>{this.props.comment}</Comment>
         </ReportWrapper>;
     }

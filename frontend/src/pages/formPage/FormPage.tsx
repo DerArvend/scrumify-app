@@ -122,9 +122,9 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
             }
         }
         catch (error) {
-            const status = error.response.status;
-            if (status >= 400 || status <= 403)
-                this.props.history.push('/auth');
+            const status = error.response && error.response.status;
+            if (status === 400)
+                message.error('Неверный формат введенных данных'); // TODO: Validations for each input
         }
     }
 }

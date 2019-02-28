@@ -59,9 +59,7 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
         }
         catch (error) {
             console.log(error);
-            const status = error.response.status;
-            if (status >= 400 || status <= 403)
-                this.props.history.push('/auth');
+            
         }
     }
 }
