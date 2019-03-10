@@ -74,11 +74,12 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
             const response = await axios.post('/api/auth', { userId: this.state.userId }, { withCredentials: true });
             if (response && response.status === 200) {
                 nextState.isAuthenticaded = true;
-            } else {
-                if (this.state.userId)
-                message.error('Неверный UserID.');
             }
 
+        }
+        catch {
+            if (this.state.userId)
+                message.error('Неверный UserID.');
         }
         finally {
             this.setState(nextState);
