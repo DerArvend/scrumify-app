@@ -1,4 +1,4 @@
-export interface RawTask {
+export interface SqlTask {
     Name: string;
     Id: string;
     ReportDate: string;

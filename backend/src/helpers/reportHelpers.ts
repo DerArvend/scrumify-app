@@ -1,21 +1,6 @@
-import { Task } from './entities/Task';
-import { Report } from './entities/Report';
-import { SqlTask } from './entities/RawTask';
-
-export const uuidRegex = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/g;
-
-export function parseTask(sqlTask: SqlTask): Task {
-    return {
-        theme: sqlTask.Theme,
-        url: sqlTask.Url,
-        currentState: sqlTask.CurrentState,
-        problems: sqlTask.Problems,
-    };
-}
-
-export function isEmptyTask(task: Task) {
-    return (!task.currentState && !task.problems && !task.theme && !task.url);
-}
+import { SqlTask } from '../entities/RawTask';
+import { Report } from '../entities/Report';
+import { parseTask, isEmptyTask } from './taskHelpers';
 
 export function parseReports(tasks: SqlTask[]): Report[] {
     const reportsById: { [id: string]: Report } = {};
