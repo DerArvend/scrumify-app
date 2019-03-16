@@ -31,7 +31,9 @@ export class ApiHandler {
     }
 
     public fetchReports = async (req: Request, res: Response) => {
-        const { userId, skip, take } = req.cookies;
+        const { userId } = req.cookies;
+        const skip = parseInt(req.query.skip);
+        const take = parseInt(req.query.take);
         const reportsResult = await this.repository.getReports({ userId, skip, take });
         if (reportsResult.isSuccess) {
             res.json(reportsResult.value);

@@ -13,5 +13,4 @@ export const PageWrapper = styled.div`
     flex-direction: column;
     align-items: center;
     align-content: center;` : ''};
-   
 `;

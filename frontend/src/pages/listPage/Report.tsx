@@ -13,7 +13,14 @@ const ReportWrapper = styled.div`
 `;
 
 const UserName = styled.div`
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
     color: #1890ff;
+
+    &:not(:first-child) {
+        margin-top: 40px;
+    }
 `;
 
 const Comment = styled.div`
@@ -28,9 +35,7 @@ const Comment = styled.div`
 export class Report extends React.Component<ReportProps> {
     render() {
         return <ReportWrapper>
-            <Divider>
-                <UserName>{this.props.userName}</UserName>
-            </Divider>
+            <UserName>{this.props.userName}</UserName>
             {this.props.tasks.length > 0 &&
                 <CardField>
                     {this.props.tasks.map(taskData => <ListTaskCard {...taskData} />)}
