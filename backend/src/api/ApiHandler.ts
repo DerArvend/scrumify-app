@@ -21,8 +21,10 @@ export class ApiHandler {
     public auth = async (req: Request, res: Response) => {
         const userId = req.cookies && req.cookies.userId || req.body.userId;
         const userNameResult = await this.repository.getUserName(userId);
+        const expiresDate = new Date();
+        expiresDate.setMonth(expiresDate.getMonth() + 3);
         if (userNameResult.isSuccess) {
-            res.cookie('userId', userId, { httpOnly: true });
+            res.cookie('userId', userId, { httpOnly: true, expires: expiresDate });
             res.cookie('userName', userNameResult.value);
             res.end();
             return;
