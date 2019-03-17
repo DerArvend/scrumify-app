@@ -81,7 +81,6 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
         this.setState({ loading: true });
         const skip = this.tasksFetched;
         const take = taskBatchSize;
-        console.log(`skip ${skip}`);
         try {
             const reports = await axios.get(`/api/fetchTasks?skip=${skip}&take=${take}`);
             this.tasksFetched += take;
