@@ -70,8 +70,9 @@ export class MsSqlDataRepository implements DataRepository {
         }
         const pool = await this.poolPromise;
         const reportId = uuid();
+        const date = this.toIsoDate(new Date()); // TODO: Date from frontend
         try {
-            const todayReportExists = this.todayReportExists(userId, new Date());
+            const todayReportExists = await this.todayReportExists(userId, date);
             if (todayReportExists) return fail(WriteReportError.TodayReportExists);
 
             const transaction = pool.transaction();
@@ -80,7 +81,7 @@ export class MsSqlDataRepository implements DataRepository {
             await request
                 .input('id', reportId)
                 .input('userId', userId)
-                .input('reportDate', new Date()) // TODO: Date from frontend
+                .input('reportDate', date)
                 .input('comment', report.comment)
                 .query(queries.insertReportQuery);
 
@@ -128,12 +129,16 @@ export class MsSqlDataRepository implements DataRepository {
         return success(response.recordset[0].Name);
     }
 
-    private async todayReportExists(userId: string, date: Date) {
+    private async todayReportExists(userId: string, isoDate: string) {
         const pool = await this.poolPromise;
         const reports = await pool.request()
             .input('userId', userId)
-            .input('reportDate', date)
+            .input('reportDate', isoDate)
             .query(queries.getReportsByDateAndUsernameQuery);
         return reports.recordset.length > 0;
+    }
+
+    private toIsoDate(date: Date) {
+        return date.toISOString().slice(0, 10);
     }
 }
