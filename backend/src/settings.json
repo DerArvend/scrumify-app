@@ -5,5 +5,8 @@
         "password": "123",
         "server": "DESKTOP-219FQPE",
         "database": "scrumify"
+        "options": {
+            "encrypt": true
+        }
     }
 }
