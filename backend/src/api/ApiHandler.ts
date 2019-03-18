@@ -20,6 +20,10 @@ export class ApiHandler {
 
     public auth = async (req: Request, res: Response) => {
         const userId = req.cookies && req.cookies.userId || req.body.userId;
+        if (!userId) {
+            res.status(403).send('Empty userID').end();
+            return;
+        }
         const userNameResult = await this.repository.getUserName(userId);
         const expiresDate = new Date();
         expiresDate.setMonth(expiresDate.getMonth() + 3);
