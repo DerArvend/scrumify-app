@@ -8,7 +8,7 @@ interface TitleInputFieldProps {
 const TitleInputField = styled.div`
     margin: 1px;
     padding: 5px;
-    width: 300px;
+    width: 290px;
     white-space: normal;
 
     &:empty:not(:focus)::before {

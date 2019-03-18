@@ -1,13 +1,14 @@
 import React from "react";
 import { TitleInputProps, TitleInput } from './TitleInput';
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Icon } from "antd";
 
 export interface FormTaskCardTitleProps extends TitleInputProps {
     onClose?: () => void;
 }
 
 const Wrapper = styled.div`
+    display: flex;
     position: relative;
 `;
 
@@ -21,9 +22,16 @@ const CloseButton = styled<any>(Button)`
     }
 `;
 
+const EditIcon = styled<any>(Icon)`
+    position: relative;
+    top: 9px;
+    margin-right: 3px;
+`;
+
 export class FormTaskCardTitle extends React.Component<FormTaskCardTitleProps> {
     render() {
         return <Wrapper>
+            <EditIcon type='edit' />
             <TitleInput {...this.props} />
             <CloseButton icon='close' shape='circle' onClick={this.props.onClose} />
         </Wrapper>;
