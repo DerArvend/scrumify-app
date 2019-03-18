@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Spin, Input, Button, message } from 'antd';
 
 interface AuthPageState {
-    fetchingDone?: boolean;
+    fetching?: boolean;
     isAuthenticaded?: boolean;
     userId?: string;
 }
@@ -25,15 +25,11 @@ const submitButtonStyle = { // TODO: styled
     margin: '45px auto 0',
 }
 
-interface AuthPageProps extends RouteProps {
-
-}
 
 export class AuthPage extends React.Component<RouteProps, AuthPageState> {
     constructor(props: RouteProps) {
         super(props);
-        const redirectedFromInterceptor = props.location && props.location.state && props.location.state.authFailed;
-        this.state = { fetchingDone: redirectedFromInterceptor };
+        this.state = { fetching: false };
     }
 
     render() {
@@ -41,9 +37,9 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
             return <Redirect to='/list' />
         return <PageWrapper maxWidth="900px">
             <PageTitle>Scrumify</PageTitle>
-            <Spin spinning={!this.state.fetchingDone}>
+            <Spin spinning={this.state.fetching}>
                 <AuthInputField>
-                    <div style={{ visibility: this.state.fetchingDone ? 'visible' : 'hidden' }}>
+                    <div style={{ visibility: this.state.fetching ? 'hidden' : 'visible' }}>
                         <div>UserID</div>
                         <Input value={this.state.userId}
                             onChange={e => this.setState({ userId: e.target.value })} />
@@ -55,7 +51,6 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
     }
 
     componentDidMount() {
-        if (!this.state.fetchingDone)
             this.fetchAuth();
     }
 
@@ -69,7 +64,8 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
     }
 
     fetchAuth = async () => {
-        const nextState: AuthPageState = { fetchingDone: true };
+        this.setState({ fetching: true });
+        const nextState: AuthPageState = { fetching: false };
         try {
             const response = await axios.post('/api/auth', { userId: this.state.userId }, { withCredentials: true });
             if (response && response.status === 200) {
