@@ -10,23 +10,23 @@ export interface ReportProps extends ReportData {
 
 const ReportWrapper = styled.div`
     padding: 10px 0px;
+       &:not(:first-child) {
+        margin-top: 5px;
+    }
 `;
 
 const UserName = styled.div`
     font-weight: 500;
     font-size: 16px;
     text-align: center;
-    color: #1890ff;
-
-    &:not(:first-child) {
-        margin-top: 40px;
-    }
+    color: rgba(0, 0, 0, 0.85); 
 `;
 
 const Comment = styled.div`
     margin: auto;
-    max-width: 800px;
-    text-align: center;
+    width: fit-content;
+    max-width: 700px;
+    text-align: start;
     white-space: pre-wrap;
     color: #333;
 `;

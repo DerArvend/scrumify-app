@@ -35,7 +35,7 @@ const urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w
 export class ListTaskCard extends React.PureComponent<ListTaskCardProps> {
     render() {
         const title = <div style={{ whiteSpace: "normal" }}>{this.props.theme}</div>;
-        return <Card title={title}>
+        return <Card title={this.props.theme && title}>
             {this.props.url && <Title>Ссылка на YouTrack</Title>}
             {this.props.url && this.renderUrl(this.props.url)}
             {this.props.currentState && <Title>Статус</Title>}
