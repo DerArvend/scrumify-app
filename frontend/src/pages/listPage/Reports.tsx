@@ -4,6 +4,7 @@ import { groupBy } from 'lodash';
 import styled from 'styled-components';
 import { Report } from './Report';
 import { Divider } from 'antd';
+import { formatDate } from '../../common/formatDate';
 
 const DateWrapper = styled.div`
     font-size: 16px;
@@ -12,7 +13,7 @@ const DateWrapper = styled.div`
 `;
 
 export function Reports(props: { reportDatas: ReportData[] }) {
-    const reportsByDate = groupBy(props.reportDatas, r => r.reportDate); // reports are sorted by date on backend
+    const reportsByDate = groupBy(props.reportDatas, r => r.reportIsoDate); // reports are sorted by date on backend
     return <div>
         {Object.keys(reportsByDate).map(date => <>
             <Divider>
@@ -23,10 +24,3 @@ export function Reports(props: { reportDatas: ReportData[] }) {
     </div>
 }
 
-function formatDate(dateString: string) {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-}

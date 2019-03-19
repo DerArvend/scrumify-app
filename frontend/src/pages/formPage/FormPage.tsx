@@ -4,12 +4,14 @@ import axios from 'axios';
 import { TaskData } from './../../entities/TaskData';
 import { CardField } from './../../common/CardField';
 import { FormTaskCard } from './FormTaskCard';
-import { Button, Icon, message } from 'antd';
+import { Button, Icon, message, Select } from 'antd';
 import { CommentInput } from './CommentInput';
 import { PageTitle } from './../../common/PageTitle';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from './../../common/PageWrapper';
 import { RouteChildrenProps } from 'react-router';
+import { formatDate } from '../../common/formatDate';
+import { stat } from 'fs';
 
 interface FromPageProps extends RouteChildrenProps {
 
@@ -17,7 +19,7 @@ interface FromPageProps extends RouteChildrenProps {
 
 interface FormPageState {
     userName: string;
-    reportDate: Date;
+    reportIsoDate: string;
     comment?: string;
     tasks: { [taskId: string]: TaskData };
     submitLoading?: boolean;
@@ -29,16 +31,15 @@ const defaultTaskData: TaskData = {
     currentState: '',
 };
 
-const ButtonRow = styled.div`
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    & > * {
-        margin: 0px 15px;
-    }
+const DateSelectWrapper = styled.div`
+    margin: 20px auto 10px;
 `;
+
+const SubmitButton = styled<any>(Button)`
+    margin: 15px;
+`;
+
+const dateRange = 2;
 
 export class FormPage extends React.Component<FromPageProps, FormPageState> {
     private idCounter: number;
@@ -47,8 +48,8 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         super(props);
         this.idCounter = 0;
         this.state = {
-            reportDate: new Date(),
             userName: "user",
+            reportIsoDate: new Date().toISOString(),
             tasks: {
                 [this.nextId]: { ...defaultTaskData }
             },
@@ -66,10 +67,17 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
                     <Icon type="plus" /> Добавить задачу
                  </Button>
                 <CommentInput value={this.state.comment} onChange={this.handleCommentChange} />
-                <ButtonRow>
-                    <Link to='/'><Button size='large'>Отменить</Button></Link>
-                    <Button type='primary' size='large' onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</Button>
-                </ButtonRow>
+                <DateSelectWrapper>
+                    <div>Дата отчета:</div>
+                    <Select style={{ width: 150 }}
+                        placeholder='Дата отчета'
+                        value={formatDate(this.state.reportIsoDate)}
+                        onChange={this.handleDateChange}>
+                        {this.renderSelectOptions()}
+                    </Select>
+                </DateSelectWrapper>
+                <SubmitButton type='primary' size='large' onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</SubmitButton>
+                <Link to='/'>К списку задач</Link>
             </PageWrapper>
         );
     }
@@ -80,6 +88,19 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
             onChange={taskData => this.handleTaskChange(taskId, taskData)}
             onClose={() => this.handleClose(taskId)}
             key={taskId} />;
+    }
+
+    private renderSelectOptions = () => {
+        const dates: Date[] = [];
+        for (let days = 0; days <= dateRange; days++) {
+            const date = new Date();
+            date.setDate(date.getDate() - days);
+            dates.push(date);
+        }
+        return dates.map(date => {
+            const isoDate = date.toISOString();
+            return <Select.Option key={isoDate} value={isoDate}>{formatDate(isoDate)}</Select.Option>
+        })
     }
 
     private get nextId() {
@@ -99,6 +120,8 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         ({ tasks: { ...state.tasks, [taskId]: newTaskData } })
     );
 
+    private handleDateChange = (isoDate: string) => this.setState({ reportIsoDate: isoDate });
+
     private handleCommentChange = (value?: string) => this.setState({ comment: value });
 
     private addTask = () => {
@@ -107,13 +130,22 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         )
     }
 
+    private isEmptyTaskThemes = () => {
+        const themes = Object.values(this.state.tasks).map(task => task.theme);
+        return themes.some(theme => !theme);
+    }
+
     private handleSubmit = async () => {
+        if (this.isEmptyTaskThemes()) {
+            message.warn('Перед отправкой отчета нужно заполнить тему для каждой задачи');
+            return;
+        }
         try {
             this.setState({ submitLoading: true });
             const response = await axios.post('/api/writeReport', {
                 userName: this.state.userName,
                 comment: this.state.comment,
-                reportDate: this.state.reportDate,
+                reportIsoDate: this.state.reportIsoDate,
                 tasks: Object.values(this.state.tasks)
             }, { withCredentials: true });
             if (response && response.status && response.status === 200) {
@@ -125,7 +157,10 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
             // TODO: Validations for input values
             const status = error.response && error.response.status;
             if (status === 400) {
-                message.error('Отчет за сегодня уже отправлен');
+                message.error('Неверный формат введенных данных')
+            }
+            if (status === 409) {
+                message.error(`Отчет за ${formatDate(this.state.reportIsoDate)} уже отправлен`);
             }
         }
         finally {

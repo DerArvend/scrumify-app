@@ -1,6 +1,6 @@
 import { DataRepository } from '../DataRepository';
 import { SqlConfig } from './SqlConfig';
-import { isValidUuid } from '../../helpers/common';
+import { isValidUuid, isValidIsoDate } from '../../helpers/stringValidators';
 import { fail, success, Result } from '../../Result';
 import { queries } from './queries';
 import { TaskSearchQuery } from '../../entities/TaskSearchQuery';
@@ -64,13 +64,16 @@ export class MsSqlDataRepository implements DataRepository {
     }
 
     public async writeReport(userId: string, report: Report): Promise<Result<void, WriteReportError>> {
+        const date = report.reportIsoDate;
+        if (!isValidIsoDate(report.reportIsoDate)) {
+            return fail(WriteReportError.InvalidDate);
+        }
         const teamId = await this.getTeamId(userId);
         if (!teamId.isSuccess) {
             return fail(WriteReportError.InvalidUserId);
         }
         const pool = await this.poolPromise;
         const reportId = uuid();
-        const date = this.toIsoDate(new Date()); // TODO: Date from frontend
         try {
             const todayReportExists = await this.todayReportExists(userId, date);
             if (todayReportExists) return fail(WriteReportError.TodayReportExists);

@@ -10,6 +10,7 @@ export enum TeamIdGetError {
 }
 
 export enum WriteReportError {
+    InvalidDate,
     InvalidUserId,
     TodayReportExists,
     DatabaseError,

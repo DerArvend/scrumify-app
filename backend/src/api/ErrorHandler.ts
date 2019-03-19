@@ -35,7 +35,8 @@ export class ApiErrorHandler {
     };
 
     private static writeReportErrorToStatus = {
-        [WriteReportError.TodayReportExists]: 400,
+        [WriteReportError.TodayReportExists]: 409, // TODO: 400
+        [WriteReportError.InvalidDate]: 400,
         [WriteReportError.InvalidUserId]: 403,
         [WriteReportError.DatabaseError]: 500,
     };

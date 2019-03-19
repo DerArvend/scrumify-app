@@ -8,7 +8,7 @@ export function parseReports(tasks: SqlTask[]): Report[] {
         if (!(task.Id in reportsById)) {
             reportsById[task.Id] = {
                 userName: task.Name,
-                reportDate: new Date(task.ReportDate),
+                reportIsoDate: task.ReportDate,
                 comment: task.Comment,
                 taskId: task.Id,
                 tasks: [],
