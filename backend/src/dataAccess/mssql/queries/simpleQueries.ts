@@ -21,7 +21,8 @@ INNER JOIN [scrumify].[dbo].[user] [user] ON report.UserId = [user].Id
 WHERE @teamId IN (SELECT TeamId FROM [scrumify].[dbo].[user] WHERE Id = report.UserId)
 ORDER BY [report].[ReportDate] DESC
 OFFSET @skip ROWS
-FETCH NEXT @take ROWS ONLY;`;
+FETCH NEXT @take ROWS ONLY;
+`;
 
 const insertReportQuery = `
 INSERT INTO [scrumify].[dbo].[report]
@@ -41,7 +42,8 @@ const getUserNameQuery = 'SELECT Name FROM [scrumify].[dbo].[user] WHERE Id = @u
 
 const getReportsByDateAndUsernameQuery = `
 SELECT * FROM [scrumify].[dbo].[report]
-WHERE UserId = @userId AND ReportDate = @reportDate;`;
+WHERE UserId = @userId AND ReportDate = @reportDate;
+`;
 
 export const queries = {
     getTeamId,
