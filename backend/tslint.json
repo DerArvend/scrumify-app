@@ -15,7 +15,8 @@
         "no-unused-variable": true,
         "one-line": false,
         "no-var-requires": false,
-        "no-shadowed-variable": false
+        "no-shadowed-variable": false,
+        "radix": false
     },
     "rulesDirectory": []
 }
