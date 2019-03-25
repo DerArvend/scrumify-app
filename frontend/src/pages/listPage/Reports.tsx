@@ -13,14 +13,14 @@ const DateWrapper = styled.div`
 `;
 
 export function Reports(props: { reportDatas: ReportData[] }) {
-    const reportsByDate = groupBy(props.reportDatas, r => r.reportIsoDate); // reports are sorted by date on backend
-    return <div>
-        {Object.keys(reportsByDate).map(date => <>
-            <Divider>
-                <DateWrapper key={date}>{formatDate(date)}</DateWrapper>
-            </Divider>
-            {reportsByDate[date].map(report => <Report {...report} />)}
-        </>)}
-    </div>
+    const reportsByDate = groupBy(props.reportDatas, r => r.reportIsoDate.slice(0, 10)); // reports are sorted by date on backend
+    return (
+        <div>
+            {Object.keys(reportsByDate).map(date => <>
+                <Divider>
+                    <DateWrapper key={date}>{formatDate(date)}</DateWrapper>
+                </Divider>
+                {reportsByDate[date].map(report => <Report {...report} />)}
+            </>)}
+        </div>);
 }
-

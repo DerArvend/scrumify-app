@@ -41,7 +41,7 @@ const getUserNameQuery = 'SELECT Name FROM [scrumify].[dbo].[user] WHERE Id = @u
 
 const getReportsByDateAndUsernameQuery = `
 SELECT * FROM [scrumify].[dbo].[report]
-WHERE UserId = @userId AND ReportDate = @reportDate;`;
+WHERE UserId = @userId AND CONVERT(date, [report].ReportDate) = @reportDate;`;
 
 export const queries = {
     getTeamId,
