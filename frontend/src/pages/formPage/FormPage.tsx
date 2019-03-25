@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from './../../common/PageWrapper';
 import { RouteChildrenProps } from 'react-router';
 import { formatDate } from '../../common/formatDate';
-import { stat } from 'fs';
 
 interface FromPageProps extends RouteChildrenProps {
 
@@ -48,7 +47,7 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         super(props);
         this.idCounter = 0;
         this.state = {
-            userName: "user",
+            userName: 'user',
             reportIsoDate: new Date().toISOString(),
             tasks: {
                 [this.nextId]: { ...defaultTaskData }
@@ -58,8 +57,9 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
 
     render() {
         return (
-            <PageWrapper centerContent maxWidth="1260px">
+            <PageWrapper centerContent maxWidth='1260px'>
                 <PageTitle>Scrumify</PageTitle>
+                <Link to="/">К списку отчетов</Link>
                 <CardField>
                     {Object.keys(this.state.tasks).map(this.renderTaskCard)}
                 </CardField>
@@ -69,15 +69,16 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
                 <CommentInput value={this.state.comment} onChange={this.handleCommentChange} />
                 <DateSelectWrapper>
                     <div>Дата отчета:</div>
-                    <Select style={{ width: 150 }}
-                        placeholder='Дата отчета'
+                    <Select
+                        style={{ width: 150 }}
+                        placeholder="Дата отчета"
                         value={formatDate(this.state.reportIsoDate)}
-                        onChange={this.handleDateChange}>
+                        onChange={this.handleDateChange}
+                    >
                         {this.renderSelectOptions()}
                     </Select>
                 </DateSelectWrapper>
-                <SubmitButton type='primary' size='large' onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</SubmitButton>
-                <Link to='/'>К списку задач</Link>
+                <SubmitButton type="primary" size="large" onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</SubmitButton>
             </PageWrapper>
         );
     }

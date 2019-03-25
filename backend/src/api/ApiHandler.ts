@@ -40,7 +40,14 @@ export class ApiHandler {
         const { userId } = req.cookies;
         const skip = parseInt(req.query.skip);
         const take = parseInt(req.query.take);
-        const reportsResult = await this.repository.getReports({ userId, skip, take });
+        const { startDate , endDate } = req.query;
+        const reportsResult = await this.repository.getReports({
+            userId,
+            skip,
+            take,
+            startIsoDate: startDate,
+            endIsoDate: endDate,
+        });
         if (reportsResult.isSuccess) {
             res.json(reportsResult.value);
             return;
