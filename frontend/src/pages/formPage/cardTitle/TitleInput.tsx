@@ -20,7 +20,6 @@ const TitleInputField = styled.div`
         color: #e0e0e0;
     }
 
-
     &:focus {
         outline: none;
     }
@@ -33,20 +32,22 @@ export interface TitleInputProps extends TitleInputFieldProps {
 
 export class TitleInput extends React.Component<TitleInputProps> {
     render() {
-        return <TitleInputField
-            onPaste={this.onPaste}
-            onBlur={this.props.onBlur}
-            placeholder={this.props.placeholder}
-            contentEditable
-            spellCheck={false}
-            suppressContentEditableWarning >
-            {this.props.value}
-        </TitleInputField>;
+        return (
+            <TitleInputField
+                onPaste={this.onPaste}
+                onBlur={this.props.onBlur}
+                placeholder={this.props.placeholder}
+                contentEditable
+                spellCheck={false}
+                suppressContentEditableWarning >
+                {this.props.value}
+            </TitleInputField>
+        );
     }
 
     private onPaste = (e: any) => {
         e.preventDefault();
-        var text = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand("insertHTML", false, text);
+        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertHTML', false, text);
     };
 }
