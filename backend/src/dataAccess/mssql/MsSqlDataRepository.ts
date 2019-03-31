@@ -7,7 +7,7 @@ import { TaskSearchQuery } from '../../entities/TaskSearchQuery';
 import { parseReports } from '../../helpers/reportHelpers';
 import { Report } from '../../entities/Report';
 import uuid from 'uuid/v4';
-import { TeamIdGetError, ReportsFetchError, WriteReportError, GetUserNameError } from '../errorTypes';
+import { TeamIdGetError, ReportsFetchError, WriteReportError, GetUserNameError, AllUsersGetError } from '../errorTypes';
 import { buildGetReportsQuery } from './queries/buildGetReportsQuery';
 const sql = require('mssql');
 
@@ -40,6 +40,20 @@ export class MsSqlDataRepository implements DataRepository {
         return success(response.recordset[0].TeamId);
     }
 
+    public async getAllUsers(teamId: string) {
+        if (!isValidUuid(teamId))
+            return fail(AllUsersGetError.InvalidUuid);
+
+        const pool = await this.poolPromise;
+        try {
+            const users = await pool.request().input('teamId', teamId).query(queries.getAllUsersQuery);
+            return success(users.recordset);
+        }
+        catch (error) {
+            console.log(`getAllUsers: sql error: ${error}`);
+        }
+    }
+
     public async getReports(taskSearchQuery: TaskSearchQuery): Promise<Result<Report[], ReportsFetchError>> {
         const teamIdResult = await this.getTeamId(taskSearchQuery.userId);
 
@@ -47,8 +61,6 @@ export class MsSqlDataRepository implements DataRepository {
             return fail(ReportsFetchError.InvalidUserId);
         }
         const pool = await this.poolPromise;
-        const skip = taskSearchQuery.skip || 0;
-        const take = taskSearchQuery.take || 20;
         const sqlQuery = buildGetReportsQuery(
             isValidIsoDate(taskSearchQuery.startIsoDate),
             isValidIsoDate(taskSearchQuery.endIsoDate),

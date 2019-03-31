@@ -18,10 +18,12 @@ const Title = styled.div`
 
 export class CommentInput extends React.Component<CommentInputProps> {
     render() {
-        return <Wrapper>
-            <Title>Комментарий:</Title>
-            <TextArea onChange={this.handleChange} value={this.props.value} />
-        </Wrapper>;
+        return (
+            <Wrapper>
+                <Title>Комментарий:</Title>
+                <TextArea onChange={this.handleChange} value={this.props.value} />
+            </Wrapper>
+        );
     }
 
     private handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>

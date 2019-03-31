@@ -6,6 +6,13 @@ FROM [scrumify].[dbo].[user]
 WHERE [user].[Id] = @userId;
 `;
 
+const getAllUsersQuery = `
+SELECT Id,
+Name
+FROM [scrumify].[dbo].[user]
+WHERE [user].TeamId = @teamId;
+`;
+
 const getReportsQuery = `
 SELECT [user].Name,
 report.Id,
@@ -49,6 +56,7 @@ export const queries = {
     getTeamId,
     getReportsQuery,
     getUserNameQuery,
+    getAllUsersQuery,
     getReportsByDateAndUsernameQuery,
     insertReportQuery,
     insertReportTaskQuery,

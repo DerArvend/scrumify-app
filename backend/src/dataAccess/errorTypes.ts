@@ -21,3 +21,8 @@ export enum GetUserNameError {
     DatabaseError,
     UserIdNotFound,
 }
+
+export enum AllUsersGetError {
+    InvalidUuid,
+    DatabaseError,
+}
