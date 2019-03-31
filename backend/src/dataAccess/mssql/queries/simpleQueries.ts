@@ -6,6 +6,13 @@ FROM [scrumify].[dbo].[user]
 WHERE [user].[Id] = @userId;
 `;
 
+const getAllUsersQuery = `
+SELECT Id,
+Name
+FROM [scrumify].[dbo].[user]
+WHERE [user].TeamId = @teamId;
+`;
+
 const getReportsQuery = `
 SELECT [user].Name,
 report.Id,
@@ -21,7 +28,8 @@ INNER JOIN [scrumify].[dbo].[user] [user] ON report.UserId = [user].Id
 WHERE @teamId IN (SELECT TeamId FROM [scrumify].[dbo].[user] WHERE Id = report.UserId)
 ORDER BY [report].[ReportDate] DESC
 OFFSET @skip ROWS
-FETCH NEXT @take ROWS ONLY;`;
+FETCH NEXT @take ROWS ONLY;
+`;
 
 const insertReportQuery = `
 INSERT INTO [scrumify].[dbo].[report]
@@ -47,6 +55,7 @@ export const queries = {
     getTeamId,
     getReportsQuery,
     getUserNameQuery,
+    getAllUsersQuery,
     getReportsByDateAndUsernameQuery,
     insertReportQuery,
     insertReportTaskQuery,

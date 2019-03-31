@@ -2,7 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { ReportData } from './../../entities/ReportData';
 import { BackTop, Spin } from 'antd';
-import { Report } from './Report';
 import { PageTitle } from './../../common/PageTitle';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
@@ -11,6 +10,8 @@ import { PageWrapper } from './../../common/PageWrapper';
 import { RouteChildrenProps } from 'react-router';
 import { throttle } from 'lodash';
 import { Reports } from './Reports';
+import { Filters } from './Filters';
+import { FilterState } from './FiltersState';
 
 interface ListPageProps extends RouteChildrenProps {
 }
@@ -18,7 +19,11 @@ interface ListPageProps extends RouteChildrenProps {
 interface ListPageState {
     reports: ReportData[];
     loading?: boolean;
+    filter: FilterState;
+    filterModalVisible?: boolean;
+    userNames: string[];
 }
+
 const NewReportButtonWrapper = styled.div`
     display: flex;
     justify-content: center;
@@ -36,45 +41,71 @@ const fetchThrottleDelay = 100;
 
 export class ListPage extends React.Component<ListPageProps, ListPageState> {
     private fetching: boolean = false;
+    private allReportsFetched: boolean = false;
     private tasksFetched: number = 0;
 
     constructor(props: ListPageProps) {
         super(props);
-        this.state = { reports: [] };
+        this.state = {
+            reports: [],
+            filter: {
+                dateRange: [],
+            },
+            userNames: [],
+        };
     }
+
     render() {
         return (
-            <PageWrapper maxWidth="1200px">
+            <PageWrapper centerContent maxWidth="1200px">
                 <PageTitle>Scrumify</PageTitle>
-                <div>
-                    <NewReportButtonWrapper>
-                        <Link to='/report'><Button icon='plus'>Заполнить отчет</Button></Link>
-                    </NewReportButtonWrapper>
-                </div>
-                <Reports reportDatas={this.state.reports} />
+                <NewReportButtonWrapper>
+                    <Link to="/report">
+                        <Button icon="plus">Заполнить отчет</Button>
+                    </Link>
+                </NewReportButtonWrapper>
+                <Filters
+                    allUserNames={this.state.userNames}
+                    onFilterChange={this.handleFilterChange}
+                    filter={this.state.filter}
+                />
+               <Reports reportDatas={this.state.reports} />
                 <SpinWrapper>
-                    <Spin size='large' spinning={this.state.loading} />
+                    <Spin size="large" spinning={this.state.loading} />
                 </SpinWrapper>
                 <BackTop />
             </PageWrapper>
         );
     }
+
     async componentDidMount() {
-        await this.fetchAndUpdateReports();
-        window.addEventListener('scroll', this.scrollListener);
+        this.fetchAndUpdateReports()
+            .then(() => window.onscroll = this.scrollListener);
+        const userNames = await axios.get('/api/getAllUsers');
+        this.setState({ userNames: userNames.data });
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.scrollListener);
-    }
-
+    // tslint:disable-next-line:member-ordering
     private scrollListener = throttle(() => {
         if (this.scrollIsOnBottom())
             this.fetchAndUpdateReports();
-    }, fetchThrottleDelay)
+    }, fetchThrottleDelay);
+
+    private handleFilterChange = (filter: FilterState) => {
+        this.setState(state => (
+            {
+                filter: { ...state.filter, ...filter },
+                reports: [],
+            }),
+            () => {
+                this.tasksFetched = 0;
+                this.allReportsFetched = false;
+                this.fetchAndUpdateReports();
+            });
+    }
 
     private fetchAndUpdateReports = async () => {
-        if (this.fetching)
+        if (this.fetching || this.allReportsFetched)
             return;
 
         this.fetching = true;
@@ -82,7 +113,26 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
         const skip = this.tasksFetched;
         const take = taskBatchSize;
         try {
-            const reports = await axios.get(`/api/fetchTasks?skip=${skip}&take=${take}`);
+            let url = `/api/fetchTasks`;
+            const { filter } = this.state;
+            const body = {
+                skip,
+                take,
+                startDate: filter.dateRange && filter.dateRange[0] && filter.dateRange[0].toISOString(),
+                endDate: filter.dateRange && filter.dateRange[1] && filter.dateRange[1].toISOString(),
+                userNames: filter.userNames,
+            };
+            // if (this.state.filter.dateRange && this.state.filter.dateRange[0])
+            //     url += `&startDate=${this.state.filter.dateRange[0].toISOString()}`;
+            // if (this.state.filter.dateRange && this.state.filter.dateRange[1])
+            //     url += `&endDate=${this.state.filter.dateRange[1].toISOString()}`;
+            const reports = await axios.post(url, body);
+            if (reports.data.length === 0) {
+                this.allReportsFetched = true;
+                this.setState({ loading: false });
+                this.fetching = false;
+                return;
+            }
             this.tasksFetched += take;
             this.setState(state => ({
                 reports: [...state.reports, ...reports.data],
