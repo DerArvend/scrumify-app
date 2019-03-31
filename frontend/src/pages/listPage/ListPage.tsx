@@ -122,10 +122,6 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
                 endDate: filter.dateRange && filter.dateRange[1] && filter.dateRange[1].toISOString(),
                 userNames: filter.userNames,
             };
-            // if (this.state.filter.dateRange && this.state.filter.dateRange[0])
-            //     url += `&startDate=${this.state.filter.dateRange[0].toISOString()}`;
-            // if (this.state.filter.dateRange && this.state.filter.dateRange[1])
-            //     url += `&endDate=${this.state.filter.dateRange[1].toISOString()}`;
             const reports = await axios.post(url, body);
             if (reports.data.length === 0) {
                 this.allReportsFetched = true;
