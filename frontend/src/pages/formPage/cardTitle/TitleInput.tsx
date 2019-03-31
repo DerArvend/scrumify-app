@@ -11,10 +11,15 @@ const TitleInputField = styled.div`
     width: 290px;
     white-space: normal;
 
-    &:empty:not(:focus)::before {
+    &:empty::before {
         content: "${(props: TitleInputFieldProps) => props.placeholder}";
         color: #ababab;
     }
+
+    &:empty:focus::before {
+        color: #e0e0e0;
+    }
+
 
     &:focus {
         outline: none;
