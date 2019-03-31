@@ -17,7 +17,6 @@ interface FromPageProps extends RouteChildrenProps {
 }
 
 interface FormPageState {
-    userName: string;
     reportIsoDate: string;
     comment?: string;
     tasks: { [taskId: string]: TaskData };
@@ -38,16 +37,19 @@ const SubmitButton = styled<any>(Button)`
     margin: 15px;
 `;
 
-const dateRange = 2;
+const sessionStorageKey = 'reportState';
+const dateRange = 5;
 
 export class FormPage extends React.Component<FromPageProps, FormPageState> {
     private idCounter: number;
+    private shouldSaveState: boolean = true;
 
     constructor(props: FromPageProps) {
         super(props);
         this.idCounter = 0;
-        this.state = {
-            userName: 'user',
+        const savedStateJson = sessionStorage.getItem(sessionStorageKey);
+        const parsedState = savedStateJson && JSON.parse(savedStateJson);
+        this.state = parsedState || {
             reportIsoDate: new Date().toISOString(),
             tasks: {
                 [this.nextId]: { ...defaultTaskData }
@@ -83,12 +85,25 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         );
     }
 
+    componentWillUnmount() {
+        if (!this.shouldSaveState) return;
+        const stateSliceToSave: Partial<FormPageState> = {
+            reportIsoDate: this.state.reportIsoDate,
+            tasks: this.state.tasks,
+            comment: this.state.comment,
+        };
+        sessionStorage.setItem(sessionStorageKey, JSON.stringify(stateSliceToSave));
+    }
+
     private renderTaskCard = (taskId: string) => {
-        return <FormTaskCard
-            taskData={this.state.tasks[taskId]}
-            onChange={taskData => this.handleTaskChange(taskId, taskData)}
-            onClose={() => this.handleClose(taskId)}
-            key={taskId} />;
+        return (
+            <FormTaskCard
+                taskData={this.state.tasks[taskId]}
+                onChange={taskData => this.handleTaskChange(taskId, taskData)}
+                onClose={() => this.handleClose(taskId)}
+                key={taskId}
+            />
+        );
     }
 
     private renderSelectOptions = () => {
@@ -144,12 +159,13 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         try {
             this.setState({ submitLoading: true });
             const response = await axios.post('/api/writeReport', {
-                userName: this.state.userName,
                 comment: this.state.comment,
                 reportIsoDate: this.state.reportIsoDate,
                 tasks: Object.values(this.state.tasks)
             }, { withCredentials: true });
             if (response && response.status && response.status === 200) {
+                sessionStorage.removeItem(sessionStorageKey);
+                this.shouldSaveState = false;
                 message.success('Отчет отправлен');
                 this.props.history.push('/list');
             }
