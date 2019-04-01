@@ -8,18 +8,50 @@ jobs:
 
     steps:
       - checkout
+
+      - restore_cache:
+          keys:
+            - frontend-deps-{{ .Branch }}-{{ checksum "frontend/package-lock.json" }}
+            - frontend-deps-{{ .Branch }}-
+            - frontend-deps-
+
       - run:
-          name: build frontend
+          name: Install frontend
           command: |
             cd frontend
             npm install
-            npm run build
+
+      - save_cache:
+          paths:
+            - ./frontend/node_modules
+          key: frontend-deps-{{ .Branch }}-{{ checksum "frontend/package-lock.json" }}
 
       - run:
-          name: build backend
+          name: Build frontend
+          command: |
+            cd frontend
+            npm run build
+
+      - restore_cache:
+          keys:
+            - backend-deps-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}
+            - backend-deps-{{ .Branch }}-
+            - backend-deps-
+
+      - run:
+          name: Install backend
           command: |
             cd backend
             npm install
-            npm run build-ts
 
-          
+      - save_cache:
+          paths:
+            - ./backend/node_modules
+          key: backend-deps-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}
+
+
+      - run:
+          name: Build backend
+          command: |
+            cd backend
+            npm run build-ts
