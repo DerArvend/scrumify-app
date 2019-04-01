@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import uuid from 'uuid/v4';
 import { TaskData } from './../../entities/TaskData';
 import { CardField } from './../../common/CardField';
 import { FormTaskCard } from './FormTaskCard';
@@ -41,18 +42,16 @@ const sessionStorageKey = 'reportState';
 const dateRange = 5;
 
 export class FormPage extends React.Component<FromPageProps, FormPageState> {
-    private idCounter: number;
     private shouldSaveState: boolean = true;
 
     constructor(props: FromPageProps) {
         super(props);
-        this.idCounter = 0;
         const savedStateJson = sessionStorage.getItem(sessionStorageKey);
         const parsedState = savedStateJson && JSON.parse(savedStateJson);
         this.state = parsedState || {
             reportIsoDate: new Date().toISOString(),
             tasks: {
-                [this.nextId]: { ...defaultTaskData }
+                [uuid()]: { ...defaultTaskData }
             },
         };
     }
@@ -119,10 +118,6 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         })
     }
 
-    private get nextId() {
-        return (this.idCounter++).toString();
-    }
-
     // TODO: Cache handlers for each taskId
     private handleClose = (taskId: string) => {
         this.setState(state => {
@@ -142,7 +137,7 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
 
     private addTask = () => {
         this.setState(state =>
-            ({ tasks: { ...state.tasks, [this.nextId]: { ...defaultTaskData } } })
+            ({ tasks: { ...state.tasks, [uuid()]: { ...defaultTaskData } } })
         )
     }
 
