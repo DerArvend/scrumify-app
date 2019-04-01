@@ -10,6 +10,7 @@ jobs:
       - checkout
 
       - restore_cache:
+          name: Restore frontend cache
           keys:
             - frontend-deps-{{ .Branch }}-{{ checksum "frontend/package-lock.json" }}
             - frontend-deps-{{ .Branch }}-
@@ -22,6 +23,7 @@ jobs:
             npm install
 
       - save_cache:
+          name: Save frontend cache
           paths:
             - ./frontend/node_modules
           key: frontend-deps-{{ .Branch }}-{{ checksum "frontend/package-lock.json" }}
@@ -33,6 +35,7 @@ jobs:
             npm run build
 
       - restore_cache:
+          name: Restore backend cache
           keys:
             - backend-deps-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}
             - backend-deps-{{ .Branch }}-
@@ -45,13 +48,51 @@ jobs:
             npm install
 
       - save_cache:
+          name: Save backend cache
           paths:
             - ./backend/node_modules
           key: backend-deps-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}
-
 
       - run:
           name: Build backend
           command: |
             cd backend
             npm run build-ts
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/build
+            - backend/build
+
+  deploy:
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - add_ssh_keys:
+          fingerprints:
+            - "43:10:5c:56:b5:4f:12:54:1c:ae:c1:69:f6:2e:54:9b"
+
+      - run:
+          name: Deploy backend
+          command: |
+            ssh $SSH_USER@$SSH_HOST "rm -rf $BACKEND_BUILD_DIR && mkdir $BACKEND_BUILD_DIR"
+            scp -r /tmp/workspace/backend/build/* $SSH_USER@$SSH_HOST:$BACKEND_BUILD_DIR
+            ssh $SSH_USER@$SSH_HOST "killall node && node $BACKEND_BUILD_DIR/app.js"
+
+      - run:
+          name: Deploy frontend
+          command: |
+            ssh $SSH_USER@$SSH_HOST "rm -rf $FRONDEND_STATIC_DIR && mkdir $FRONTEND_STATIC_DIR"
+            scp -r /tmp/workspace/frontend/build/* $SSH_USER@$SSH_HOST:$FRONTEND_STATIC_DIR
+ 
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build
+      - deploy:
+          requires: 
+            - build
