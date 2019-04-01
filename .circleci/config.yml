@@ -92,7 +92,15 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only:
+                - release
       - deploy:
           requires: 
             - build
+          filters:
+            branches:
+              only:
+                - release
