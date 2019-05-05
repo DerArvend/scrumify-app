@@ -28,6 +28,7 @@ const Comment = styled.div`
     max-width: 700px;
     text-align: start;
     white-space: pre-wrap;
+    word-break: break-word;
     color: #333;
 `;
 

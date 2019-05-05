@@ -15,15 +15,20 @@ interface AuthPageState {
 const AuthInputField = styled.div`
     justify-content: center;
     margin: auto;
-    padding: 100px 0px;
+    padding: 100px 0px 50px;
     width: 100%;
-    max-width: 22em;
+    max-width: 25em;
 `;
 
 const submitButtonStyle = { // TODO: styled
     display: 'block',
     margin: '45px auto 0',
 }
+
+const UserInfoHint = styled.p`
+    font-size: 0.95em;
+    color: #666;
+`
 
 
 export class AuthPage extends React.Component<RouteProps, AuthPageState> {
@@ -35,7 +40,7 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
     render() {
         if (this.state.isAuthenticaded)
             return <Redirect to='/list' />
-        return <PageWrapper maxWidth="900px">
+        return <PageWrapper centerContent maxWidth="900px">
             <PageTitle>Scrumify</PageTitle>
             <Spin spinning={this.state.fetching}>
                 <AuthInputField>
@@ -46,12 +51,13 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
                         <Button style={submitButtonStyle} type='primary' size='large' onClick={this.handleSumbmit}>Войти</Button>
                     </div>
                 </AuthInputField>
+                <UserInfoHint>UserID можно получить у Telegram-бота командой /userinfo</UserInfoHint>
             </Spin>
         </PageWrapper>
     }
 
     componentDidMount() {
-            this.fetchAuth();
+        this.fetchAuth();
     }
 
     handleSumbmit = (e: React.MouseEvent<HTMLButtonElement>) => {
