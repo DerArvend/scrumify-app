@@ -43,15 +43,15 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
         return <PageWrapper centerContent maxWidth="900px">
             <PageTitle>Scrumify</PageTitle>
             <Spin spinning={this.state.fetching}>
-                <AuthInputField>
-                    <div style={{ visibility: this.state.fetching ? 'hidden' : 'visible' }}>
+                <div style={{ visibility: this.state.fetching ? 'hidden' : 'visible' }}>
+                    <AuthInputField>
                         <div>UserID</div>
                         <Input value={this.state.userId}
                             onChange={e => this.setState({ userId: e.target.value })} />
                         <Button style={submitButtonStyle} type='primary' size='large' onClick={this.handleSumbmit}>Войти</Button>
-                    </div>
-                </AuthInputField>
-                <UserInfoHint>UserID можно получить у Telegram-бота командой /userinfo</UserInfoHint>
+                    </AuthInputField>
+                    <UserInfoHint>UserID можно получить у Telegram-бота командой /userinfo</UserInfoHint>
+                </div>
             </Spin>
         </PageWrapper>
     }
