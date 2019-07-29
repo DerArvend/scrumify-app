@@ -9,10 +9,12 @@ export interface ListTaskCardProps extends TaskData {
 
 const Title = styled.div`
     font-size: 14px;
+    word-break: break-all;
 `;
 
 const Text = styled.div`
     color: #181818;
+    word-break: break-all;
     &:not(:last-child) {
         margin-bottom: 7px;
     }
