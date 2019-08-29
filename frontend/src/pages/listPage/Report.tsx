@@ -36,7 +36,9 @@ const Comment = styled.div`
 export class Report extends React.Component<ReportProps> {
     render() {
         return <ReportWrapper>
-            <UserName>{this.props.userName}</UserName>
+            <UserName>
+                <a href={`tg://resolve?domain=${this.props.userName}`}>{this.props.userName}</a>
+            </UserName>
             {this.props.tasks.length > 0 &&
                 <CardField>
                     {this.props.tasks.map(taskData => <ListTaskCard {...taskData} />)}
