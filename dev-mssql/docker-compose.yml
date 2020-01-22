@@ -1,0 +1,9 @@
+version: '3'
+services: 
+  testmssql:
+    build: .
+    ports:
+      - "1433:1433"
+    environment:
+      - SA_PASSWORD=123123aA
+      - ACCEPT_EULA=Y
