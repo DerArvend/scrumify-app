@@ -4,10 +4,8 @@
   "description": "",
   "main": "build/app.js",
   "scripts": {
-    "build-ts": "tsc",
-    "start": "node build/app.js",
-    "watch-node": "nodemon build/app.js",
-    "watch-ts": "tsc -w"
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn src/app.ts"
   },
   "author": "",
   "license": "ISC",
@@ -18,12 +16,14 @@
     "@types/uuid": "^3.4.4",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
+    "cross-env": "^6.0.3",
     "express": "^4.16.4",
     "mssql": "^4.3.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.9",
+    "ts-node-dev": "^1.0.0-pre.44",
     "tslint": "^5.12.1",
     "typescript": "^3.3.1"
   }

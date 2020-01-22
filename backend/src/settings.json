@@ -2,6 +2,9 @@
     "port": 4000,
     "mssqlConfig": {
         "database": "scrumify",
+        "user": "SA",
+        "password": "123123aA",
+        "server": "localhost",
         "options": {
             "encrypt": true
         }
