@@ -5,6 +5,7 @@
   "main": "build/app.js",
   "scripts": {
     "build": "tsc",
+    "serve": "cross-env NODE_ENV=production node build/app.js",
     "dev": "ts-node-dev --respawn src/app.ts"
   },
   "author": "",
@@ -22,6 +23,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@types/node": "^13.1.8",
     "nodemon": "^1.18.9",
     "ts-node-dev": "^1.0.0-pre.44",
     "tslint": "^5.12.1",

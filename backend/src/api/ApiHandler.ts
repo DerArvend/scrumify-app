@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -14,8 +15,13 @@ export class ApiHandler {
         this.repository = repository;
         this.settings = settings;
         this.app = express();
+
         this.registerMiddlewares(this.app);
         this.registerApiMethods(this.app);
+        if (settings.selfHosted) {
+            this.registerStatic(this.app);
+        }
+
     }
 
     public auth = async (req: Request, res: Response) => {
@@ -43,7 +49,7 @@ export class ApiHandler {
             return;
         }
         const teamIdResult = await this.repository.getTeamId(userId);
-        if (teamIdResult.error){
+        if (teamIdResult.error) {
             res.sendStatus(403);
             return;
         }
@@ -57,7 +63,7 @@ export class ApiHandler {
         const { userId } = req.cookies;
         const skip = parseInt(req.body.skip);
         const take = parseInt(req.body.take);
-        const { startDate , endDate, userNames } = req.body;
+        const { startDate, endDate, userNames } = req.body;
         const reportsResult = await this.repository.getReports({
             userId,
             skip,
@@ -86,6 +92,13 @@ export class ApiHandler {
     public startListening() {
         this.app.listen(this.settings.port,
             () => console.log(`Scrumify backend listening on port ${this.settings.port}`));
+    }
+
+    private registerStatic(app: Application) {
+        app.use(express.static(path.resolve(__dirname, '../../../frontend/build')));
+        app.get('*', (req, res) => {
+            res.sendFile(path.resolve(__dirname, '../../../frontend/build/index.html'));
+        });
     }
 
     private registerMiddlewares(app: Application) {
