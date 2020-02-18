@@ -19,8 +19,10 @@ npm start
 ```
 
 ## Production build
+1. Build docker image.
 In repository root run `docker build -t scrumify-app-image .`
 
+2. Run container
 To start container you have to specify following environment variables: `SCRUMIFY_DB_URL`, `SCRUMIFY_DB_USER`, `SCRUMIFY_DB_PASSWORD`. Inside conainer application listens for port 4000.
 
 Example: 
