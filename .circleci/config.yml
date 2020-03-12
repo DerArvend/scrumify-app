@@ -80,7 +80,7 @@ jobs:
           command: |
             ssh $SSH_USER@$SSH_HOST "rm -rf $BACKEND_BUILD_DIR && mkdir $BACKEND_BUILD_DIR"
             scp -r /tmp/workspace/backend/build/* $SSH_USER@$SSH_HOST:$BACKEND_BUILD_DIR
-            ssh $SSH_USER@$SSH_HOST "killall node; setsid node $BACKEND_BUILD_DIR/app.js > /dev/null &"
+            ssh $SSH_USER@$SSH_HOST "killall node; setsid NODE_ENV=production node $BACKEND_BUILD_DIR/app.js > /dev/null &"
 
       - run:
           name: Deploy frontend
