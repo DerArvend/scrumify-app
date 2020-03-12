@@ -1,17 +1,17 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import uuid from 'uuid/v4';
-import { TaskData } from './../../entities/TaskData';
-import { CardField } from './../../common/CardField';
-import { FormTaskCard } from './FormTaskCard';
-import { Button, Icon, message, Select } from 'antd';
-import { CommentInput } from './CommentInput';
-import { PageTitle } from './../../common/PageTitle';
-import { Link } from 'react-router-dom';
-import { PageWrapper } from './../../common/PageWrapper';
-import { RouteChildrenProps } from 'react-router';
-import { formatDate } from '../../common/formatDate';
+import {TaskData} from './../../entities/TaskData';
+import {CardField} from './../../common/CardField';
+import {FormTaskCard} from './FormTaskCard';
+import {Button, Icon, message, Select} from 'antd';
+import {CommentInput} from './CommentInput';
+import {PageTitle} from './../../common/PageTitle';
+import {Link} from 'react-router-dom';
+import {PageWrapper} from './../../common/PageWrapper';
+import {RouteChildrenProps} from 'react-router';
+import {formatDate} from '../../common/formatDate';
+import {Api} from "../../api/Api";
 
 interface FromPageProps extends RouteChildrenProps {
 
@@ -51,7 +51,7 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
         this.state = parsedState || {
             reportIsoDate: new Date().toISOString(),
             tasks: {
-                [uuid()]: { ...defaultTaskData }
+                [uuid()]: {...defaultTaskData}
             },
         };
     }
@@ -65,13 +65,13 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
                     {Object.keys(this.state.tasks).map(this.renderTaskCard)}
                 </CardField>
                 <Button onClick={this.addTask}>
-                    <Icon type="plus" /> Добавить задачу
-                 </Button>
-                <CommentInput value={this.state.comment} onChange={this.handleCommentChange} />
+                    <Icon type="plus"/> Добавить задачу
+                </Button>
+                <CommentInput value={this.state.comment} onChange={this.handleCommentChange}/>
                 <DateSelectWrapper>
                     <div>Дата отчета:</div>
                     <Select
-                        style={{ width: 150 }}
+                        style={{width: 150}}
                         placeholder="Дата отчета"
                         value={formatDate(this.state.reportIsoDate)}
                         onChange={this.handleDateChange}
@@ -79,7 +79,8 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
                         {this.renderSelectOptions()}
                     </Select>
                 </DateSelectWrapper>
-                <SubmitButton type="primary" size="large" onClick={this.handleSubmit} loading={this.state.submitLoading}>Отправить отчет</SubmitButton>
+                <SubmitButton type="primary" size="large" onClick={this.handleSubmit}
+                              loading={this.state.submitLoading}>Отправить отчет</SubmitButton>
             </PageWrapper>
         );
     }
@@ -121,23 +122,23 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
     // TODO: Cache handlers for each taskId
     private handleClose = (taskId: string) => {
         this.setState(state => {
-            const nextTaskDatas = { ...state.tasks };
+            const nextTaskDatas = {...state.tasks};
             delete nextTaskDatas[taskId];
-            this.setState({ tasks: nextTaskDatas });
+            this.setState({tasks: nextTaskDatas});
         });
     }
 
     private handleTaskChange = (taskId: string, newTaskData: TaskData) => this.setState(state =>
-        ({ tasks: { ...state.tasks, [taskId]: newTaskData } })
+        ({tasks: {...state.tasks, [taskId]: newTaskData}})
     );
 
-    private handleDateChange = (isoDate: string) => this.setState({ reportIsoDate: isoDate });
+    private handleDateChange = (isoDate: string) => this.setState({reportIsoDate: isoDate});
 
-    private handleCommentChange = (value?: string) => this.setState({ comment: value });
+    private handleCommentChange = (value?: string) => this.setState({comment: value});
 
     private addTask = () => {
         this.setState(state =>
-            ({ tasks: { ...state.tasks, [uuid()]: { ...defaultTaskData } } })
+            ({tasks: {...state.tasks, [uuid()]: {...defaultTaskData}}})
         )
     }
 
@@ -152,20 +153,19 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
             return;
         }
         try {
-            this.setState({ submitLoading: true });
-            const response = await axios.post('/api/writeReport', {
+            this.setState({submitLoading: true});
+            const success = await Api.writeReport({
                 comment: this.state.comment,
                 reportIsoDate: this.state.reportIsoDate,
                 tasks: Object.values(this.state.tasks)
-            }, { withCredentials: true });
-            if (response && response.status && response.status === 200) {
+            });
+            if (success) {
                 sessionStorage.removeItem(sessionStorageKey);
                 this.shouldSaveState = false;
                 message.success('Отчет отправлен');
                 this.props.history.push('/list');
             }
-        }
-        catch (error) {
+        } catch (error) {
             // TODO: Validations for input values
             const status = error.response && error.response.status;
             if (status === 400) {
@@ -174,9 +174,8 @@ export class FormPage extends React.Component<FromPageProps, FormPageState> {
             if (status === 409) {
                 message.error(`Отчет за ${formatDate(this.state.reportIsoDate)} уже отправлен`);
             }
-        }
-        finally {
-            this.setState({ submitLoading: false });
+        } finally {
+            this.setState({submitLoading: false});
         }
     }
 }

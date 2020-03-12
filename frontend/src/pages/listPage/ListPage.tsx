@@ -5,13 +5,13 @@ import { BackTop, Spin } from 'antd';
 import { PageTitle } from './../../common/PageTitle';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
-import axios from 'axios';
 import { PageWrapper } from './../../common/PageWrapper';
 import { RouteChildrenProps } from 'react-router';
 import { throttle } from 'lodash';
 import { Reports } from './Reports';
 import { Filters } from './Filters';
 import { FilterState } from './FiltersState';
+import {Api} from "../../api/Api";
 
 interface ListPageProps extends RouteChildrenProps {
 }
@@ -81,7 +81,7 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
     async componentDidMount() {
         this.fetchAndUpdateReports()
             .then(() => window.onscroll = this.scrollListener);
-        const userNames = await axios.get('/api/getAllUsers');
+        const userNames = await Api.getAllUsers();
         this.setState({ userNames: userNames.data });
     }
 
@@ -113,16 +113,15 @@ export class ListPage extends React.Component<ListPageProps, ListPageState> {
         const skip = this.tasksFetched;
         const take = taskBatchSize;
         try {
-            let url = `/api/fetchTasks`;
             const { filter } = this.state;
-            const body = {
+            const params = {
                 skip,
                 take,
                 startDate: filter.dateRange && filter.dateRange[0] && filter.dateRange[0].toISOString(),
                 endDate: filter.dateRange && filter.dateRange[1] && filter.dateRange[1].toISOString(),
                 userNames: filter.userNames,
             };
-            const reports = await axios.post(url, body);
+            const reports = await Api.fetchTasks(params);
             if (reports.data.length === 0) {
                 this.allReportsFetched = true;
                 this.setState({ loading: false });
