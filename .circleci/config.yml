@@ -57,7 +57,7 @@ jobs:
           name: Build backend
           command: |
             cd backend
-            npm run build-ts
+            npm run build
 
       - persist_to_workspace:
           root: .
