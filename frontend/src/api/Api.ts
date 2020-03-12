@@ -81,4 +81,4 @@ class FakeApi {
     }
 }
 
-export const Api = new DefaultApi();
+export const Api = new FakeApi();
