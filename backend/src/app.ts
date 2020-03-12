@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const apiSettings: ApiSettings = {
-    port: settings.port,
+    port: process.env.SCRUMIFY_USE_HEROKU ? parseInt(process.env.PORT, 10) : settings.port,
     selfHosted: process.env.SCRRUMIFY_IS_SELFHOSTED === 'true'
 }
 
