@@ -21,7 +21,7 @@ class DefaultApi {
         return axios.post(url, params);
     }
 
-    public async isAuthenticated(userId: string): Promise<boolean> {
+    public async isAuthenticated(userId?: string): Promise<boolean> {
         try {
             const response = await axios.post('/api/auth', {userId}, {withCredentials: true});
             return response && response.status === 200;
@@ -68,7 +68,7 @@ class FakeApi {
         }]});
     }
 
-    public async isAuthenticated(userId: string): Promise<boolean> {
+    public async isAuthenticated(userId?: string): Promise<boolean> {
         return Promise.resolve(true);
     }
 

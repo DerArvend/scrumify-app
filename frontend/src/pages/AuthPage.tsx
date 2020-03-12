@@ -74,7 +74,7 @@ export class AuthPage extends React.Component<RouteProps, AuthPageState> {
         this.setState({fetching: true});
         const nextState: AuthPageState = {fetching: false};
         try {
-            const authenticated = this.state.userId && await Api.isAuthenticated(this.state.userId);
+            const authenticated = await Api.isAuthenticated(this.state.userId);
             if (authenticated) {
                 nextState.isAuthenticaded = true;
             }
